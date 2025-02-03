@@ -1,0 +1,12 @@
+fastapi[standard]
+aiocache[redis]
+pydantic
+pydantic-settings
+openai
+python-multipart
+motor
+pyjwt
+passlib
+email-validator
+boto3
+loguru
