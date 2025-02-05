@@ -5,6 +5,7 @@ from .model import (InterviewContext, InterviewStartEvent, InterviewStartEventRe
 
 from app.dependencies import (CacheDep, ConfigDep, AwsSessionDep)
 from app.exception_handler import InvalidId
+from app.agents.dependencies import WorkflowDep
 from .dependencies import AssignCandidateIdDep
 from .background_task import save_data
 
@@ -22,10 +23,12 @@ async def start_interview(
         request: InterviewStartEvent,
         candidate_id: AssignCandidateIdDep,
         cache: CacheDep,
+        workflow: WorkflowDep
 ):
     """Start a new interview."""
     context = InterviewContext(job_title=request.job_title, candidate_id=str(candidate_id))
-    context.questions = fake_q
+    context = await workflow.run(context)
+    # context.questions = fake_q
     await cache.set(candidate_id, context.model_dump())
 
     return context
@@ -41,7 +44,8 @@ async def submit_interview(
         cache: CacheDep,
         config: ConfigDep,
         aws_session: AwsSessionDep,
-        background_tasks: BackgroundTasks
+        background_tasks: BackgroundTasks,
+        workflow: WorkflowDep
 ) -> InterviewSubmitEventReceived:
     """Submit responses and receive feedback."""
 
@@ -52,16 +56,13 @@ async def submit_interview(
     context = InterviewContext(**cached_context)
 
     context.responses = request.responses
-    context.scores = fake_s
-    context.feedback = fake_f
+    context = await workflow.run(context)
+    # context.scores = fake_s
+    # context.feedback = fake_f
 
     data = context.model_dump()
     await cache.set(candidate_id, data)
 
-    # AWS bucket and table name
-    bucket = 'ai-app-filestorage'
-    table_name = 'ai_app'
-
-    background_tasks.add_task(save_data, aws_session, data, bucket, table_name)
+    background_tasks.add_task(save_data, aws_session, data, config.aws_bucket, config.aws_table)
 
     return InterviewSubmitEventReceived(**data)

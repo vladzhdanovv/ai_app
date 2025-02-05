@@ -17,20 +17,20 @@ class MockAIDriver(AIDriver):
         return mock_response
 
 
-# class OpenAIDriver(AIDriver):
-#     def __init__(self, api_key, model="o1-mini"):
-#         self._client = AsyncOpenAI(api_key=api_key)
-#         self._model = model
-#
-#     async def generate_text(self, prompt: str, role: str = "assistant") -> str:
-#         completion = await self._client.chat.completions.create(
-#             model=self._model,
-#             messages=[{
-#                 "role": role,
-#                 "content": prompt,
-#             }],
-#         )
-#         return completion.choices[0].message.content
+class OpenAIDriver(AIDriver):
+    def __init__(self, api_key, model="o1-mini"):
+        self._client = AsyncOpenAI(api_key=api_key)
+        self._model = model
+
+    async def generate_text(self, prompt: str, role: str = "assistant") -> str:
+        completion = await self._client.chat.completions.create(
+            model=self._model,
+            messages=[{
+                "role": role,
+                "content": prompt,
+            }],
+        )
+        return completion.choices[0].message.content
 
 
 class AIClient:

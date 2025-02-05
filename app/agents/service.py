@@ -1,6 +1,6 @@
 from app.interview.model import InterviewContext
 
-from .client import AIClient, MockAIDriver
+from .client import AIClient, MockAIDriver, OpenAIDriver
 from .constants import prompts
 from app.dependencies import ConfigDep
 
@@ -61,4 +61,4 @@ class Workflow():
 
 async def get_workflow(config: ConfigDep) -> Workflow:
     agents = [QuestionAgent(), EvaluationAgent(), ValidationAgent()]
-    return Workflow(MockAIDriver(config.openai_api_key), agents)
+    return Workflow(OpenAIDriver(config.openai_api_key), agents)
