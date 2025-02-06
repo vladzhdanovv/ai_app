@@ -11,11 +11,6 @@ from .background_task import save_data
 
 interview_router = APIRouter()
 
-fake_q = ('one', 'two', 'three')
-fake_s = (1, 2, 3)
-fake_f = 'lorem ipsum'
-
-
 @interview_router.post("/start",
                         summary="Start a new interview.",
                         response_model=InterviewStartEventReceived)
@@ -24,11 +19,10 @@ async def start_interview(
         candidate_id: AssignCandidateIdDep,
         cache: CacheDep,
         workflow: WorkflowDep
-):
+) -> InterviewSubmitEventReceived:
     """Start a new interview."""
     context = InterviewContext(job_title=request.job_title, candidate_id=str(candidate_id))
     context = await workflow.run(context)
-    # context.questions = fake_q
     await cache.set(candidate_id, context.model_dump())
 
     return context
@@ -57,8 +51,6 @@ async def submit_interview(
 
     context.responses = request.responses
     context = await workflow.run(context)
-    # context.scores = fake_s
-    # context.feedback = fake_f
 
     data = context.model_dump()
     await cache.set(candidate_id, data)

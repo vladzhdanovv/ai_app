@@ -5,8 +5,6 @@ from uuid import uuid4
 from botocore.exceptions import BotoCoreError, ClientError
 
 from app.exception_handler import CustomBotoCoreError, CustomClientError
-
-
 from app.session import AwsSession
 
 
