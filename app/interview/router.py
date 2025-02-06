@@ -19,13 +19,15 @@ async def start_interview(
         candidate_id: AssignCandidateIdDep,
         cache: CacheDep,
         workflow: WorkflowDep
-) -> InterviewSubmitEventReceived:
+) -> InterviewStartEventReceived:
     """Start a new interview."""
     context = InterviewContext(job_title=request.job_title, candidate_id=str(candidate_id))
     context = await workflow.run(context)
-    await cache.set(candidate_id, context.model_dump())
+    data = context.model_dump()
 
-    return context
+    await cache.set(candidate_id, data)
+
+    return InterviewStartEventReceived(**data)
 
 
 @interview_router.post("/{candidate_id}/submit",

@@ -24,6 +24,15 @@ class QuestionAgent(BasicAgent):
         return await super().handle(context, ai_client)
 
 
+class QuestionValidationAgent(BasicAgent):
+    async def handle(self, context: InterviewContext, ai_client: AIClient) -> InterviewContext:
+        if context.questions:
+            prompt = prompts["question_validation"].format(job_title=context.job_title, questions=context.questions)
+            text = await ai_client.generate_text(prompt)
+            context.validation_scores = tuple(text.split("\n")[:3])
+        return await super().handle(context, ai_client)
+
+
 class EvaluationAgent(BasicAgent):
     async def handle(self, context: InterviewContext, ai_client: AIClient) -> InterviewContext:
         if not context.scores and context.responses:
@@ -60,5 +69,5 @@ class Workflow():
 
 
 async def get_workflow(config: ConfigDep) -> Workflow:
-    agents = [QuestionAgent(), EvaluationAgent(), ValidationAgent()]
+    agents = [QuestionAgent(), QuestionValidationAgent(), EvaluationAgent(), ValidationAgent()]
     return Workflow(OpenAIDriver(config.openai_api_key), agents)

@@ -1,9 +1,24 @@
 prompts = {
-    "question": """Be very brief, no unnecessary comments. Give me three short interview questions where each question starts on a new line. Follow this format:
+    "question": """Be very brief, no unnecessary comments. Give me three short interview questions where each question starts on a new line and will suit this job position {job_title}. Follow this format:
 Content of the 1st question?
 Content of the 2nd question?
 Content of the 3rd question?
     """,
+
+    "question_validation": """
+role: {job_title}
+
+Q: {questions[0]}
+
+Q: {questions[1]}
+
+Q: {questions[2]}
+
+Be very brief, no unnecessary comments. Familiarise yourself with the questions. Next, score your answers from 1 to 5 for each question do they clearly fit the stated role as short interview question? Each score starts on a new line. Follow this format:
+5
+3
+4""",
+
     "evaluation": """Q: {questions[0]}
 A: {responses[0]}
 
@@ -17,6 +32,7 @@ Be very brief, no unnecessary comments. Familiarise yourself with the answers to
 5
 3
 4""",
+
     "validation": """Q: {questions[0]}
 A: {responses[0]}
 Score: {scores[0]}
@@ -34,6 +50,10 @@ Be very brief, no unnecessary comments. Read the answers to the questions and th
 4
 Brief general summary"""
 }
+
+validation = {"""
+    
+"""}
 
 mock_response = """5
 4

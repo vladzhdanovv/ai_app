@@ -9,10 +9,17 @@ class InterviewContext(BaseModel):
     job_title: str
     candidate_id: str
     questions: tuple[str, str, str] | None = None
+    validation_scores: tuple[ScoreInt, ScoreInt, ScoreInt] | None = None
     responses: tuple[str, str, str] | None = None
     scores: tuple[ScoreInt, ScoreInt, ScoreInt] | None = None
     feedback: str | None = None
 
+
+class InterviewValidationContext(BaseModel):
+    job_title: str
+    candidate_id: str
+    questions: tuple[str, str, str] | None = None
+    validation_scores: tuple[ScoreInt, ScoreInt, ScoreInt] | None = None
 
 class InterviewFileLogEntry(BaseModel):
     questions: tuple[str, str, str]
@@ -29,6 +36,7 @@ class InterviewStartEventReceived(BaseModel):
     job_title: str
     candidate_id: UUID4 | Annotated[str, AfterValidator(lambda x: uuid.UUID(x, version=4))]
     questions: tuple[str, str, str]
+    validation_scores: tuple[ScoreInt, ScoreInt, ScoreInt] | None = None
 
 
 class InterviewSubmitEvent(BaseModel):
